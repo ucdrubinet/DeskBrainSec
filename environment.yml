@@ -6,6 +6,7 @@ dependencies:
   - python==3.10.0
   - pip
   - libvips
+  - openslide
   - pip:
     - pillow
     - pyvips
@@ -23,3 +24,4 @@ dependencies:
     - argparse
     - psutil
     - xmltodict
+    - openslide-python
