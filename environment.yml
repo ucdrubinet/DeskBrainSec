@@ -12,6 +12,7 @@ dependencies:
     - pyvips
     - numpy
     - pandas
+    - ipykernel
     - scikit-learn
     - scikit-image
     - matplotlib
