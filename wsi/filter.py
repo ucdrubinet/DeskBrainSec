@@ -10,8 +10,8 @@ import skimage.future as sk_future
 import skimage.morphology as sk_morphology
 import skimage.segmentation as sk_segmentation
 
-import util
-from util import Time
+import wsi.util as util
+from wsi.util import Time
 
 
 def filter_rgb_to_grayscale(np_img, output_type="uint8"):

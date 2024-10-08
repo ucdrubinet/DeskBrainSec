@@ -5,8 +5,8 @@ from openslide import OpenSlideError
 from PIL import Image
 import math
 
-import util
-from util import Time
+import wsi.util as util
+from wsi.util import Time
 
 def open_slide(filepath):
   """
