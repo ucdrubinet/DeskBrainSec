@@ -136,7 +136,7 @@ def grabCZI(path, verbose = False):
 WSI_DIR = 'data'  #TO-DO: add path to your folder of WSIs
 SAVE_DIR = 'tiles' #TO-DO: add path to your saved tiles
 # source: BrainSec svs_to_png.py
-TILE_SIZE = 128
+TILE_SIZE = 2048
 
 wsi_slides = os.listdir(WSI_DIR)
 imagenames = sorted(wsi_slides)

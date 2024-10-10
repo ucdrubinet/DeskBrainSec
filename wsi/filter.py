@@ -1,7 +1,7 @@
 # Adapted from https://github.com/deroneriksson/python-wsi-preprocessing
 
 import numpy as np
-import scipy.ndimage as sc_morph
+import scipy.ndimage as scipy_img
 import skimage.color as sk_color
 import skimage.exposure as sk_exposure
 import skimage.feature as sk_feature
@@ -540,7 +540,7 @@ def filter_binary_fill_holes(np_img, output_type="bool"):
   t = Time()
   if np_img.dtype == "uint8":
     np_img = np_img / 255
-  result = sc_morph.binary_fill_holes(np_img)
+  result = scipy_img.binary_fill_holes(np_img)
   if output_type == "bool":
     pass
   elif output_type == "float":
@@ -567,7 +567,7 @@ def filter_binary_erosion(np_img, disk_size=5, iterations=1, output_type="uint8"
   t = Time()
   if np_img.dtype == "uint8":
     np_img = np_img / 255
-  result = sc_morph.binary_erosion(np_img, sk_morphology.disk(disk_size), iterations=iterations)
+  result = scipy_img.binary_erosion(np_img, sk_morphology.disk(disk_size), iterations=iterations)
   if output_type == "bool":
     pass
   elif output_type == "float":
@@ -594,7 +594,7 @@ def filter_binary_dilation(np_img, disk_size=5, iterations=1, output_type="uint8
   t = Time()
   if np_img.dtype == "uint8":
     np_img = np_img / 255
-  result = sc_morph.binary_dilation(np_img, sk_morphology.disk(disk_size), iterations=iterations)
+  result = scipy_img.binary_dilation(np_img, sk_morphology.disk(disk_size), iterations=iterations)
   if output_type == "bool":
     pass
   elif output_type == "float":
@@ -622,7 +622,7 @@ def filter_binary_opening(np_img, disk_size=3, iterations=1, output_type="uint8"
   t = Time()
   if np_img.dtype == "uint8":
     np_img = np_img / 255
-  result = sc_morph.binary_opening(np_img, sk_morphology.disk(disk_size), iterations=iterations)
+  result = scipy_img.binary_opening(np_img, sk_morphology.disk(disk_size), iterations=iterations)
   if output_type == "bool":
     pass
   elif output_type == "float":
@@ -650,7 +650,7 @@ def filter_binary_closing(np_img, disk_size=3, iterations=1, output_type="uint8"
   t = Time()
   if np_img.dtype == "uint8":
     np_img = np_img / 255
-  result = sc_morph.binary_closing(np_img, sk_morphology.disk(disk_size), iterations=iterations)
+  result = scipy_img.binary_closing(np_img, sk_morphology.disk(disk_size), iterations=iterations)
   if output_type == "bool":
     pass
   elif output_type == "float":
@@ -728,4 +728,44 @@ def filter_threshold(np_img, threshold, output_type="bool"):
   else:
     result = result.astype("uint8") * 255
   util.np_info(result, "Threshold", t.elapsed())
+  return result
+
+def filter_gaussian(np_img, sigma=1, output_type="uint8"):
+  """
+  Return Numpy image with Gaussian blur.
+
+  Args:
+    np_img: Numpy uint8 or float64 array of a grayscale or color image.
+    sigma: Int value to determine width of Gaussian. Higher values result in more blur.
+    output_type: Type of array to return (uint8 or float64).
+  
+  Returns:
+    Numpy array representing the Gaussian blurred image.
+  """
+  t = Time()
+  result = sk_filters.gaussian(np_img, sigma, preserve_range=True, channel_axis=None)
+  
+  if output_type == "uint8":
+    result = np.astype(result, "uint8")
+
+  util.np_info(result, "Gaussian", t.elapsed())
+  return result
+
+def filter_median(np_img, size=5):
+  """
+  Return Numpy image with median blur applied.
+
+  Args:
+    np_img: Numpy uint8 or float64 array of a grayscale or color image.
+    size: Int width of the median filter.
+  
+  Returns:
+    Numpy array representing the median blurred image.
+  """
+  t = Time()
+  result = np.zeros_like(np_img)
+  for i in range(3):
+    result[:, :, i] = scipy_img.median_filter(np_img[:, :, i], size=size)
+  
+  util.np_info(result, "Median", t.elapsed())
   return result
