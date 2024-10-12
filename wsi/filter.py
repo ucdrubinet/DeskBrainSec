@@ -9,6 +9,7 @@ import skimage.filters as sk_filters
 import skimage.future as sk_future
 import skimage.morphology as sk_morphology
 import skimage.segmentation as sk_segmentation
+from functools import reduce
 
 import wsi.util as util
 from wsi.util import Time
@@ -763,9 +764,31 @@ def filter_median(np_img, size=5):
     Numpy array representing the median blurred image.
   """
   t = Time()
-  result = np.zeros_like(np_img)
-  for i in range(3):
-    result[:, :, i] = scipy_img.median_filter(np_img[:, :, i], size=size)
+
+  if np_img.ndim == 2:
+    result = scipy_img.median_filter(np_img, size=size)
+  else:
+    result = np.zeros_like(np_img)
+    for i in range(3):
+      result[:, :, i] = scipy_img.median_filter(np_img[:, :, i], size=size)
   
   util.np_info(result, "Median", t.elapsed())
+  return result
+
+def filter_pipeline(np_img, filter_pipeline, name=None):
+  """
+  Apply pipeline of filtering operations on Numpy image
+
+  Args:
+    np_img: Numpy uint8 or float64 array to filter
+    filter_pipeline: Sequential list of filtering functions to apply to np_img
+    name (optional): Pipeline name to print
+  
+  Returns:
+    Numpy array with filters applied
+  """
+  t = Time()
+  result = reduce(lambda v, f: f(v), filter_pipeline, np_img)
+  print('-' * 70)
+  util.np_info(result, name, t.elapsed())
   return result
