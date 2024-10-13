@@ -2,8 +2,8 @@
 
 import openslide
 from openslide import OpenSlideError
-from PIL import Image
 import math
+import os
 
 import wsi.util as util
 from wsi.util import Time
@@ -41,9 +41,7 @@ def slide_to_scaled_pil_image(filepath, scale):
   w, h = svs.dimensions
   w = math.floor(w / scale)
   h = math.floor(h / scale)
-  level = svs.get_best_level_for_downsample(scale)
-  wsi = svs.read_region((0,0), level, svs.level_dimensions[level])
-  return wsi.convert("RGB").resize((w,h), Image.BILINEAR)
+  return svs.get_thumbnail((w,h))
 
 def slide_to_scaled_np_image(filepath, scale):
   """
@@ -70,6 +68,48 @@ def show_slide(filepath):
   """
   pil_img = slide_to_scaled_pil_image(filepath)
   pil_img.show()
+
+def save_pil(pil_img, savepath):
+  """
+  Save a thumbnail of a PIL image.
+
+  Args:
+    pil_img: The PIL image to save as a thumbnail.
+    savepath: The path to the thumbnail.
+  """
+  dir = os.path.dirname(savepath)
+  if dir != '' and not os.path.exists(dir):
+    os.makedirs(dir)
+  pil_img.save(savepath)
+
+def save_slide_thumbnail(filepath, savepath, scale):
+  """
+  Save a thumbnail of a WSI file downsized by scale factor.
+
+  Args:
+    filepath: Path to WSI file.
+    savepath: Path to thumbnail image file.
+    scale: Factor to downscale WSI.
+  """
+  pil = slide_to_scaled_pil_image(filepath, scale)
+  save_pil(pil, savepath)
+
+def save_slide_dir_thumbnails(slide_dir, thumbnail_dir, scale=64, format="png"):
+  """
+  Save thumbnails of all WSI files in a directory to another specified directory.
+
+  Args:
+    slide_dir: Name of directory with WSI files.
+    thumbnail_dir: Name of directory to save thumbnails.
+    format: File format of thumbnails.
+  """
+  if not os.path.exists(slide_dir):
+    return FileNotFoundError
+  if not os.path.exists(thumbnail_dir):
+    os.makedirs(thumbnail_dir)
+  for slide_path in os.listdir(slide_dir):
+    thumbnail_path = os.path.join(thumbnail_dir, os.path.splitext(slide_path)[0] + "." + format)
+    save_slide_thumbnail(os.path.join(slide_dir, slide_path), thumbnail_path, scale)
 
 def slide_info(filepath, display_all_properties=False):
   """
