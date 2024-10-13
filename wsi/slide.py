@@ -101,6 +101,7 @@ def save_slide_dir_thumbnails(slide_dir, thumbnail_dir, scale=64, format="png"):
   Args:
     slide_dir: Name of directory with WSI files.
     thumbnail_dir: Name of directory to save thumbnails.
+    scale: Factor to downsize WSIs.
     format: File format of thumbnails.
   """
   if not os.path.exists(slide_dir):
