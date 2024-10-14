@@ -5,6 +5,7 @@ thumbnails/
 med_sat_ot_di/
 otsu/
 entropy/
+entr_fill/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
