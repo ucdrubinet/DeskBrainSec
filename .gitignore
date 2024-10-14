@@ -2,6 +2,9 @@
 data/
 tiles/
 thumbnails/
+med_sat_ot_di/
+otsu/
+entropy/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
