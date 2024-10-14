@@ -22,7 +22,7 @@ def save_pil(pil_img, savepath):
     os.makedirs(dir)
   pil_img.save(savepath)
 
-def pil_to_np_rgb(pil_img):
+def pil_to_np_rgb(pil_img, display_info=True):
   """
   Convert a PIL Image to a NumPy array.
 
@@ -34,9 +34,11 @@ def pil_to_np_rgb(pil_img):
   Returns:
     The PIL image converted to a NumPy array.
   """
-  t = Time()
+  if display_info:
+    t = Time()
   rgb = np.asarray(pil_img)
-  np_info(rgb, "RGB", t.elapsed())
+  if display_info:
+    np_info(rgb, "RGB", t.elapsed())
   return rgb
 
 
@@ -113,7 +115,7 @@ def display_img(np_img, text=None, font_path="/Library/Fonts/Arial Bold.ttf", si
   plt.imshow(result)
 
 
-def mask_rgb(rgb, mask):
+def mask_rgb(rgb, mask, display_info=True):
   """
   Apply a binary (T/F, 1/0) mask to a 3-channel RGB image and output the result.
 
@@ -124,12 +126,14 @@ def mask_rgb(rgb, mask):
   Returns:
     NumPy array representing an RGB image with mask applied.
   """
-  t = Time()
+  if display_info:
+    t = Time()
   if mask.dtype == "uint8":
     result = rgb & np.dstack([mask, mask, mask])
   else:
     result = rgb * np.dstack([mask, mask, mask])
-  np_info(result, "Mask RGB", t.elapsed())
+  if display_info:
+    np_info(result, "Mask RGB", t.elapsed())
   return result
 
 def show_histogram(np_img, title, grayscale=False, channel_idx=0):
