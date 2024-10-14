@@ -1,5 +1,6 @@
 # Adapted from https://github.com/deroneriksson/python-wsi-preprocessing
 
+import os
 import datetime
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,6 +9,18 @@ from PIL import Image, ImageDraw, ImageFont
 # If True, display additional NumPy array stats (min, max, mean, is_binary).
 ADDITIONAL_NP_STATS = False
 
+def save_pil(pil_img, savepath):
+  """
+  Save a PIL image to path.
+
+  Args:
+    pil_img: The PIL image to save.
+    savepath: The path to the image file.
+  """
+  dir = os.path.dirname(savepath)
+  if dir != '' and not os.path.exists(dir):
+    os.makedirs(dir)
+  pil_img.save(savepath)
 
 def pil_to_np_rgb(pil_img):
   """

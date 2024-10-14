@@ -1,5 +1,6 @@
 # Adapted from https://github.com/deroneriksson/python-wsi-preprocessing
 
+import os
 import numpy as np
 import scipy.ndimage as scipy_img
 import skimage.color as sk_color
@@ -10,6 +11,7 @@ import skimage.future as sk_future
 import skimage.morphology as sk_morphology
 import skimage.segmentation as sk_segmentation
 from functools import reduce
+from PIL import Image
 
 import wsi.util as util
 from wsi.util import Time
@@ -29,8 +31,9 @@ def filter_rgb_to_grayscale(np_img, output_type="uint8"):
     Grayscale image as NumPy array with shape (h, w).
   """
   t = Time()
-  # Another common RGB ratio possibility: [0.299, 0.587, 0.114]
-  grayscale = np.dot(np_img[..., :3], [0.2125, 0.7154, 0.0721])
+  rgb_ratio = [0.299, 0.587, 0.114]
+  #rgb_ratio = [0.2125, 0.7154, 0.0721]
+  grayscale = np.dot(np_img[..., :3], rgb_ratio)
   if output_type != "float":
     grayscale = grayscale.astype("uint8")
   util.np_info(grayscale, "Gray", t.elapsed())
@@ -792,3 +795,31 @@ def filter_pipeline(np_img, filter_pipeline, name=None):
   print('-' * 70)
   util.np_info(result, name, t.elapsed())
   return result
+
+def filter_img_dir(img_dir, filter_dir, pipeline, pipeline_name=None):
+  for file in os.listdir(img_dir):
+    img = util.pil_to_np_rgb(Image.open(os.path.join(img_dir, file)))
+    filtered = util.np_to_pil(filter_pipeline(img, pipeline, pipeline_name))
+    filename = os.path.splitext(file)
+    util.save_pil(filtered, os.path.join(filter_dir, filename[0] + "_filter" + filename[1]))
+
+def mask_img_dir(rgb_dir, filter_dir):
+  rgb_files = os.listdir(rgb_dir)
+  filter_files = os.listdir(filter_dir)
+  for rgb in rgb_files:
+    filename = os.path.splitext(rgb)
+    if filename[0] + "_filter" + filename[1] in filter_files:
+      rgb_np = util.pil_to_np_rgb(
+        Image.open(
+          os.path.join(
+            rgb_dir, 
+            rgb
+            )))
+      filter_np = util.pil_to_np_rgb(
+        Image.open(
+          os.path.join(
+            filter_dir, 
+            filename[0] + "_filter" + filename[1]
+            )))
+      masked = util.np_to_pil(util.mask_rgb(rgb_np, filter_np))
+      util.save_pil(masked, os.path.join(filter_dir, filename[0] + "_mask" + filename[1]))

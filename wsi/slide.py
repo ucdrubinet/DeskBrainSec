@@ -69,19 +69,6 @@ def show_slide(filepath):
   pil_img = slide_to_scaled_pil_image(filepath)
   pil_img.show()
 
-def save_pil(pil_img, savepath):
-  """
-  Save a thumbnail of a PIL image.
-
-  Args:
-    pil_img: The PIL image to save as a thumbnail.
-    savepath: The path to the thumbnail.
-  """
-  dir = os.path.dirname(savepath)
-  if dir != '' and not os.path.exists(dir):
-    os.makedirs(dir)
-  pil_img.save(savepath)
-
 def save_slide_thumbnail(filepath, savepath, scale):
   """
   Save a thumbnail of a WSI file downsized by scale factor.
@@ -92,7 +79,7 @@ def save_slide_thumbnail(filepath, savepath, scale):
     scale: Factor to downscale WSI.
   """
   pil = slide_to_scaled_pil_image(filepath, scale)
-  save_pil(pil, savepath)
+  util.save_pil(pil, savepath)
 
 def save_slide_dir_thumbnails(slide_dir, thumbnail_dir, scale=64, format="png"):
   """
