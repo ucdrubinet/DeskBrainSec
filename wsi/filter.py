@@ -176,6 +176,23 @@ def filter_entropy(np_img, neighborhood=9, threshold=5, output_type="uint8", dis
     util.np_info(entr, "Entropy", t.elapsed())
   return entr
 
+def filter_entropy_scale(np_img, neighborhood_scale=3, threshold=5, output_type="uint8", display_info=True):
+  """
+  Wrapper of filter_entropy() with neighborhood size proportional to np_img shape.
+
+  Args:
+    np_img: Image as a NumPy array.
+    neighborhood_scale: Pixel width of neighborhood per 100 pixels.
+    threshold: Threshold value.
+    output_type: Type of array to return (bool, float, or uint8).
+    display_info: Boolean flag to print NumPy array info
+
+  Returns:
+    NumPy array (bool, float, or uint8) where True, 1.0, and 255 represent a measure of complexity.
+  """
+  avg_width = (np_img.shape[0] + np_img.shape[1]) / 2
+  neighborhood = int(avg_width / 100) * neighborhood_scale
+  return filter_entropy(np_img, neighborhood, threshold, output_type, display_info)
 
 def filter_canny(np_img, sigma=1, low_threshold=0, high_threshold=25, output_type="uint8", display_info=True):
   """
@@ -667,6 +684,23 @@ def filter_binary_dilation(np_img, disk_size=5, iterations=1, output_type="uint8
     util.np_info(result, "Binary Dilation", t.elapsed())
   return result
 
+def filter_binary_dilation_scale(np_img, disk_size_scale=1, iterations=1, output_type="uint8", display_info=True):
+  """
+  Wrapper for filter_binary_dilation() where disk_size is proportional to image width.
+
+  Args:
+    np_img: Binary image as a NumPy array.
+    disk_size_scale: Int pixel radius of disk per 100 pixels in image width.
+    iterations: How many times to repeat the dilation.
+    output_type: Type of array to return (bool, float, or uint8).
+    display_info: Boolean flag to print NumPy array info
+
+  Returns:
+    NumPy array (bool, float, or uint8) where edges have been dilated.
+  """
+  avg_width = (np_img.shape[0] + np_img.shape[1]) / 2
+  disk_size = int(avg_width / 100) * disk_size_scale
+  return filter_binary_dilation(np_img, disk_size, iterations, output_type, display_info)
 
 def filter_binary_opening(np_img, disk_size=3, iterations=1, output_type="uint8", display_info=True):
   """
@@ -857,6 +891,21 @@ def filter_median(np_img, size=5, display_info=True):
     util.np_info(result, "Median", t.elapsed())
   return result
 
+def filter_median_scale(np_img, size_scale=3, display_info=True):
+  """
+  Wrapper for filter_median() where filter size is proportional to image shape.
+
+  Args:
+    np_img: Numpy uint8 or float64 array of a grayscale or color image.
+    size_scale: Int pixel width of median filter per 100 pixels of image width.
+    display_info: Boolean flag to print NumPy array info 
+  Returns:
+    Numpy array representing the median blurred image.
+  """
+  avg_width = (np_img.shape[0] + np_img.shape[1]) / 2
+  size = int(avg_width / 100) * size_scale
+  return filter_median(np_img, size, display_info)
+
 def filter_pipeline(np_img, filter_pipeline, name=None, display_info=True):
   """
   Apply pipeline of filtering operations on Numpy image
@@ -878,6 +927,15 @@ def filter_pipeline(np_img, filter_pipeline, name=None, display_info=True):
   return result
 
 def filter_img_dir(img_dir, filter_dir, pipeline, pipeline_name=None):
+  """
+  Apply pipeline of filtering operations on a directory of image files.
+
+  Args:
+    img_dir: Path to image directory.
+    filter_dir: Path to directory to save filtered images.
+    pipeline: Sequential list of filtering functions to apply.
+    pipeline_name (optional): Pipeline name to print.
+  """
   for file in os.listdir(img_dir):
     print(file)
     img = util.pil_to_np_rgb(Image.open(os.path.join(img_dir, file)), display_info=False)
@@ -887,6 +945,13 @@ def filter_img_dir(img_dir, filter_dir, pipeline, pipeline_name=None):
     print("-" * 70)
 
 def mask_img_dir(rgb_dir, filter_dir):
+  """
+  Apply binary masks from filter directory to RGB image files in directory.
+
+  Args:
+  rgb_dir: Path to RGB image directory.
+  filter_dir: Path to directory with binary masks.
+  """
   rgb_files = os.listdir(rgb_dir)
   filter_files = os.listdir(filter_dir)
   for rgb in rgb_files:
