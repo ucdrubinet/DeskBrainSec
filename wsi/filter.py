@@ -848,7 +848,7 @@ def filter_gaussian(np_img, sigma=1, output_type="uint8", display_info=True):
 
   Args:
     np_img: Numpy uint8 or float64 array of a grayscale or color image.
-    sigma: Int value to determine width of Gaussian. Higher values result in more blur.
+    sigma: Float value to determine width of Gaussian. Higher values result in more blur.
     output_type: Type of array to return (uint8 or float64).
     display_info: Boolean flag to print NumPy array info
 
@@ -865,6 +865,23 @@ def filter_gaussian(np_img, sigma=1, output_type="uint8", display_info=True):
   if display_info:
     util.np_info(result, "Gaussian", t.elapsed())
   return result
+
+def filter_gaussian_scale(np_img, sigma_scale=0.25, output_type="uint8", display_info=True):
+  """
+  Wrapper of filter_gaussian() where filter sigma is proportional to image shape. 
+
+  Args:
+    np_img: Numpy uint8 or float64 array of a grayscale or color image.
+    sigma: Float sigma value per 100 pixels of image width.
+    output_type: Type of array to return (uint8 or float64).
+    display_info: Boolean flag to print NumPy array info
+
+  Returns:
+    Numpy array representing the Gaussian blurred image.
+  """
+  avg_width = (np_img.shape[0] + np_img.shape[1]) / 2
+  sigma = int(avg_width / 100) * sigma_scale
+  return filter_gaussian(np_img, sigma, output_type, display_info)
 
 def filter_median(np_img, size=5, display_info=True):
   """

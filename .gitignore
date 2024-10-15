@@ -6,6 +6,7 @@ med_sat_ot_di/
 otsu/
 entropy/
 entr_fill/
+gauss_otsu/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
