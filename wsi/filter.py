@@ -965,7 +965,7 @@ def filter_img_dir(img_dir, filter_dir, pipeline, pipeline_name=None):
     size_runtime[i] = np.array([t.elapsed().microseconds, img.shape[0] * img.shape[1]])
     print("-" * 70)
   print("Average runtime: %d microsec"% np.mean(size_runtime[1]))
-  print("Average microsec per pixel: %.4f\n"% np.mean(size_runtime[0] / size_runtime[1]))
+  print("Average microsec per pixel: %.4f\n"% np.mean(size_runtime[:, 0] / size_runtime[:, 1]))
 
 def mask_img_dir(rgb_dir, filter_dir):
   """
