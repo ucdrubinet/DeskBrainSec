@@ -953,13 +953,19 @@ def filter_img_dir(img_dir, filter_dir, pipeline, pipeline_name=None):
     pipeline: Sequential list of filtering functions to apply.
     pipeline_name (optional): Pipeline name to print.
   """
-  for file in os.listdir(img_dir):
+  # Numpy array with structure [size (pixels), runtime (microsecs)]
+  size_runtime = np.zeros((len(os.listdir(img_dir)), 2))
+  for i, file in enumerate(os.listdir(img_dir)):
+    t = Time()
     print(file)
     img = util.pil_to_np_rgb(Image.open(os.path.join(img_dir, file)), display_info=False)
     filtered = util.np_to_pil(filter_pipeline(img, pipeline, pipeline_name))
     filename = os.path.splitext(file)
     util.save_pil(filtered, os.path.join(filter_dir, filename[0] + "_filter" + filename[1]))
+    size_runtime[i] = np.array([t.elapsed().microseconds, img.shape[0] * img.shape[1]])
     print("-" * 70)
+  print("Average runtime: %d microsec"% np.mean(size_runtime[1]))
+  print("Average microsec per pixel: %.4f\n"% np.mean(size_runtime[0] / size_runtime[1]))
 
 def mask_img_dir(rgb_dir, filter_dir):
   """
@@ -972,7 +978,6 @@ def mask_img_dir(rgb_dir, filter_dir):
   rgb_files = os.listdir(rgb_dir)
   filter_files = os.listdir(filter_dir)
   for rgb in rgb_files:
-    print(rgb)
     filename = os.path.splitext(rgb)
     if filename[0] + "_filter" + filename[1] in filter_files:
       rgb_np = util.pil_to_np_rgb(
@@ -989,6 +994,6 @@ def mask_img_dir(rgb_dir, filter_dir):
             filename[0] + "_filter" + filename[1]
             )),
         display_info=False)
-      masked = util.np_to_pil(util.mask_rgb(rgb_np, filter_np))
+      masked = util.np_to_pil(util.mask_rgb(rgb_np, filter_np, display_info=False))
       util.save_pil(masked, os.path.join(filter_dir, filename[0] + "_mask" + filename[1]))
-      print("-" * 70)
+  print("Applied all masks.")

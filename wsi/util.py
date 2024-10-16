@@ -164,6 +164,20 @@ def show_histogram(np_img, title, grayscale=False, channel_idx=0):
   plt.title(title)
   plt.show()
 
+def img_dir_stats(img_dir):
+  files = os.listdir(img_dir)
+  dims = np.zeros((len(files), 2))
+  size = np.zeros(len(files))
+
+  for i, file in enumerate(files):
+    img = Image.open(os.path.join(img_dir, file))
+    dims[i] = np.array(img.size)
+    size[i] = os.path.getsize(os.path.join(img_dir, file))
+
+  print(img_dir)
+  print("Avg dimensions: %d x %d pixels" % (np.mean(dims, 0)[0], np.mean(dims, 0)[1]))
+  print("Avg size: %.2f MB" % (np.mean(size) / 1000000))
+  
 class Time:
   """
   Class for displaying elapsed time.

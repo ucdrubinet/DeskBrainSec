@@ -1,5 +1,6 @@
 # Adapted from https://github.com/deroneriksson/python-wsi-preprocessing
 
+import numpy as np
 import openslide
 from openslide import OpenSlideError
 import math
@@ -127,3 +128,17 @@ def slide_info(filepath, display_all_properties=False):
       print("  Property: " + str(prop_key) + ", value: " + str(slide.properties.get(prop_key)))
 
   t.elapsed_display()
+
+def slide_dir_stats(img_dir):
+  files = os.listdir(img_dir)
+  dims = np.zeros((len(files), 2))
+  size = np.zeros(len(files))
+
+  for i, file in enumerate(files):
+    img = open_slide(os.path.join(img_dir, file))
+    dims[i] = np.array(img.dimensions)
+    size[i] = os.path.getsize(os.path.join(img_dir, file))
+
+  print(img_dir)
+  print("Avg dimensions: %d x %d pixels" % (np.mean(dims, 0)[0], np.mean(dims, 0)[1]))
+  print("Avg size: %.2f MB" % (np.mean(size) / 1000000))
