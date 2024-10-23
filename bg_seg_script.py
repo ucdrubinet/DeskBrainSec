@@ -5,7 +5,7 @@ from functools import partial
 import sys
 
 OTSU = "otsu"
-GAUSSIAN_OTSU = "gauss_ostu"
+GAUSSIAN_OTSU = "gauss_otsu"
 MEDIAN_SATURATION_OTSU_DILATION = "med_sat_ot_di"
 ENTROPY = "entropy"
 ENTROPY_FILL = "entr_fill"
