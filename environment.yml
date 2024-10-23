@@ -6,11 +6,13 @@ dependencies:
   - python==3.10.0
   - pip
   - libvips
+  - openslide
   - pip:
     - pillow
     - pyvips
     - numpy
     - pandas
+    - ipykernel
     - scikit-learn
     - scikit-image
     - matplotlib
@@ -23,3 +25,4 @@ dependencies:
     - argparse
     - psutil
     - xmltodict
+    - openslide-python
