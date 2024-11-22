@@ -961,10 +961,11 @@ def filter_img_dir(img_dir, filter_dir, pipeline, pipeline_name=None):
     img = util.pil_to_np_rgb(Image.open(os.path.join(img_dir, file)), display_info=False)
     filtered = util.np_to_pil(filter_pipeline(img, pipeline, pipeline_name))
     filename = os.path.splitext(file)
+    print(os.path.join(filter_dir, filename[0] + "_filter" + filename[1]))
     util.save_pil(filtered, os.path.join(filter_dir, filename[0] + "_filter" + filename[1]))
     size_runtime[i] = np.array([t.elapsed().microseconds, img.shape[0] * img.shape[1]])
     print("-" * 70)
-  print("Average runtime: %d microsec"% np.mean(size_runtime[1]))
+  print("Average runtime: %d microsec"% np.mean(size_runtime[:, 0]))
   print("Average microsec per pixel: %.4f\n"% np.mean(size_runtime[:, 0] / size_runtime[:, 1]))
 
 def mask_img_dir(rgb_dir, filter_dir):

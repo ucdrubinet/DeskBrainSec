@@ -12,8 +12,8 @@ BASE_OUTPUT_DIR="$2"
 
 # Create necessary subdirectories
 THUMBNAIL_DIR="${BASE_OUTPUT_DIR}/thumbnails"
-MASK_DIR="${BASE_OUTPUT_DIR}/gauss_otsu"  # Changed to gauss_otsu
-TILES_DIR="${BASE_OUTPUT_DIR}/tiles"
+MASK_DIR="gauss_otsu"  # Changed to gauss_otsu
+TILES_DIR="tiles"
 TISSUE_TILES_DIR="${BASE_OUTPUT_DIR}/tissue_tiles"
 
 # Create all required directories

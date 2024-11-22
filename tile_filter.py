@@ -16,7 +16,8 @@ def process_slide_tiles(slide_id, tiles_base_dir, mask_dir, output_base_dir):
     """
     # Construct paths
     slide_tiles_dir = os.path.join(tiles_base_dir, slide_id, '0')
-    mask_path = os.path.join(mask_dir, f"{slide_id}_filter.svs")
+    mask_path = os.path.join(mask_dir, f"{slide_id}_filter.png")
+    print(mask_path)
     
     if not os.path.exists(mask_path):
         print(f"Warning: No mask found for slide {slide_id}")
@@ -24,47 +25,47 @@ def process_slide_tiles(slide_id, tiles_base_dir, mask_dir, output_base_dir):
         
     # Load mask
     mask = util.pil_to_np_rgb(Image.open(mask_path), display_info=False)
+    print(mask.shape)
+    print(mask)
+    currow = mask[80].tolist()
+    print(currow)
     
     # Get dimensions of the mask
     mask_height, mask_width = mask.shape[:2]
+    tiles_height, tiles_width = len(os.listdir(slide_tiles_dir)), len(os.listdir(os.path.join(slide_tiles_dir, os.listdir(slide_tiles_dir)[0])))
+    print(tiles_height, tiles_width)
     
-    # Process each x coordinate directory
-    for x_dir in os.listdir(slide_tiles_dir):
-        x_path = os.path.join(slide_tiles_dir, x_dir)
-        if not os.path.isdir(x_path):
+    # Process each y coordinate directory
+    for y_dir in os.listdir(slide_tiles_dir):
+        y_path = os.path.join(slide_tiles_dir, y_dir)
+        if not os.path.isdir(y_path):
             continue
             
-        x = int(x_dir)
+        y = int(y_dir)
         
-        # Process each y coordinate tile
-        for y_file in os.listdir(x_path):
-            if not y_file.endswith('.jpg'):
+        # Process each x coordinate tile
+        for x_file in os.listdir(y_path):
+            if not x_file.endswith('.jpg'):
                 continue
                 
-            y = int(os.path.splitext(y_file)[0])
+            x = int(os.path.splitext(x_file)[0])
             
             # Get tile path
-            tile_path = os.path.join(x_path, y_file)
-            
-            # Load first tile to get tile size
-            with Image.open(tile_path) as tile:
-                tile_size = tile.size[0]
+            tile_path = os.path.join(y_path, x_file)
             
             # Calculate corresponding position in mask
             # Scale x and y coordinates to mask size
-            mask_x = int(x * mask_width / (tile_size * (mask_width // tile_size)))
-            mask_y = int(y * mask_height / (tile_size * (mask_height // tile_size)))
-            
-            # Check if tile center point is in tissue region (mask == 0 means tissue)
-            if not np.all(mask[mask_y, mask_x] == 255):  # If not all white (background)
+            mask_x = int(x * mask_width / tiles_width)
+            mask_y = int(y * mask_height / tiles_height)
+            if mask[mask_y, mask_x] == 255:
                 # Create output directory structure
-                output_x_dir = os.path.join(output_base_dir, slide_id, '0', x_dir)
+                output_x_dir = os.path.join(output_base_dir, slide_id, '0', y_dir)
                 os.makedirs(output_x_dir, exist_ok=True)
                 
                 # Copy tile to output directory
                 shutil.copy2(
                     tile_path,
-                    os.path.join(output_x_dir, y_file)
+                    os.path.join(output_x_dir, x_file)
                 )
 
 def filter_tiles_using_masks(tiles_dir, mask_dir, tissue_tiles_dir):
@@ -78,10 +79,13 @@ def filter_tiles_using_masks(tiles_dir, mask_dir, tissue_tiles_dir):
     """
     # Process each slide directory
     for slide_id in os.listdir(tiles_dir):
-        print(slide_id)
+        print("A SLIDE ID IS", slide_id)
         if not os.path.isdir(os.path.join(tiles_dir, slide_id)):
             continue
-            
+        
+        try:
+            shutil.rmtree(tissue_tiles_dir)
+        except FileNotFoundError: pass
         print(f"Processing slide: {slide_id}")
         process_slide_tiles(slide_id, tiles_dir, mask_dir, tissue_tiles_dir)
         print(f"Completed processing slide: {slide_id}")
@@ -97,6 +101,7 @@ def main():
     
     # Create output directory if it doesn't exist
     os.makedirs(args.tissue_tiles_dir, exist_ok=True)
+    print(args)
     
     # Process the tiles
     filter_tiles_using_masks(args.tiles_dir, args.mask_dir, args.tissue_tiles_dir)
