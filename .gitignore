@@ -7,6 +7,8 @@ otsu/
 entropy/
 entr_fill/
 gauss_otsu/
+tiles/
+wmgm-split/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
