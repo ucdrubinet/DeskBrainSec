@@ -252,7 +252,7 @@ def find_checkpoint(base_dir, model_name):
 
 def fit(model_name, model, optimizer, plaque_train_loader, plaque_val_loader,
         tissue_train_loader, tissue_val_loader, num_epochs, base_dir, load_checkpoint = False,
-        stat_count=10, gpu=0):
+        stat_count=10, gpu=0, scheduler=None):
 
     # Move model to device
     device = torch.device('cuda:'+str(gpu) if torch.cuda.is_available() else 'cpu')
@@ -288,9 +288,6 @@ def fit(model_name, model, optimizer, plaque_train_loader, plaque_val_loader,
         bacc_val_epoch = {"plaque": [], "tissue": []}
         bacc_train_epoch = {"plaque": [], "tissue": []}
 
-    # Init Learning Rate Scheduler
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
-
     # Set loss functions for tissue and plaque data
     plaque_loss_fn = nn.MultiLabelSoftMarginLoss()
     tissue_loss_fn = nn.CrossEntropyLoss()
@@ -301,7 +298,7 @@ def fit(model_name, model, optimizer, plaque_train_loader, plaque_val_loader,
         start_time = time.time()
         # TRAINING STEP
         batch_losses = train_step(model, optimizer, plaque_train_loader, tissue_train_loader,
-                                device, plaque_loss_fn, tissue_loss_fn, epoch, num_epochs, stat_count)
+                                device, plaque_loss_fn, tissue_loss_fn, epoch, num_epochs, stat_count, scheduler)
 
         # VALIDATION STEP
         val_metrics = eval_step(model, plaque_val_loader, tissue_val_loader, device)
