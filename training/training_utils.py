@@ -295,6 +295,8 @@ def fit(model_name, model, optimizer, plaque_train_loader, plaque_val_loader,
     # Train until reaching specified number of epochs
     for epoch in range(start_epoch, num_epochs):
         print("Epoch Number", epoch)
+        if scheduler:
+            print("Current Learning Rate:", scheduler.get_lr()[0])
         start_time = time.time()
         # TRAINING STEP
         batch_losses = train_step(model, optimizer, plaque_train_loader, tissue_train_loader,
