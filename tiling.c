@@ -30,8 +30,8 @@ int main(int argc, char *argv[]) {
     if (VIPS_INIT(argv[0]))
         vips_error_exit(NULL);
 
-    const char *wsi_dir = "data/";
-    const char *save_dir = "tiles/";
+    const char *wsi_dir = argv[1];
+    const char *save_dir = argv[2];
 
     DIR *dir = opendir(wsi_dir);
     if (!dir) {

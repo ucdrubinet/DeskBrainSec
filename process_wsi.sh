@@ -13,7 +13,7 @@ BASE_OUTPUT_DIR="$2"
 # Create necessary subdirectories
 THUMBNAIL_DIR="${BASE_OUTPUT_DIR}/thumbnails"
 MASK_DIR="gauss_otsu"  # Changed to gauss_otsu
-TILES_DIR="tiles"
+TILES_DIR="tiles2"
 TISSUE_TILES_DIR="${BASE_OUTPUT_DIR}/tissue_tiles"
 
 # Create all required directories
@@ -25,7 +25,7 @@ python3 bg_seg_script.py "$WSI_DIR" "$THUMBNAIL_DIR" 64 "gauss_otsu" "Background
 
 # Step 2: Run the C tiling program to generate tiles
 echo "Generating tiles..."
-./tiling_program "$MASK_DIR" "$TILES_DIR"
+./tiling_program "$WSI_DIR" "$TILES_DIR"
 
 # Step 3: Use the generated masks to filter tiles
 echo "Filtering tiles based on background masks..."
