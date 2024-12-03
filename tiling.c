@@ -5,7 +5,7 @@
 #include <dirent.h>
 #include <time.h>
 
-#define TILE_SIZE 30000
+#define TILE_SIZE 1536
 
 void save_and_tile(VipsImage *image_to_segment, const char *imagename, const char *output_dir, int tile_size) {
     char base_dir_name[256];
