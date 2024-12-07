@@ -222,8 +222,8 @@ def save_metric_figs(file_prefix, loss_epoch, acc_train_epoch, acc_val_epoch,
         os.mkdir(base_dir)
 
     # Save loss metrics
-    save_metric_fig([loss_epoch["plaque"]], ["loss"], "Tissue Loss", file_prefix+'_tissue_loss.png', base_dir)
-    save_metric_fig([loss_epoch["tissue"]], ["loss"], "Plaque Loss", file_prefix+'_plaque_loss.png', base_dir)
+    save_metric_fig([loss_epoch["plaque"]], ["loss"], "Plaque Loss", file_prefix+'_plaque_loss.png', base_dir)
+    save_metric_fig([loss_epoch["tissue"]], ["loss"], "Tissue Loss", file_prefix+'_tissue_loss.png', base_dir)
 
     # Save accuracy metrics
     save_metric_fig([acc_train_epoch["plaque"], acc_val_epoch["plaque"]],
