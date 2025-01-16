@@ -33,15 +33,15 @@ mkdir -p "$THUMBNAIL_DIR" "$MASK_DIR" "$TILES_DIR" "$TISSUE_TILES_DIR"
 
 # Step 1: Generate thumbnails and background masks
 echo "Generating thumbnails and background masks..."
-#python bg_seg_script.py "$WSI_DIR" "$THUMBNAIL_DIR" 64 "gauss_otsu" "Background Segmentation"
+python bg_seg_script.py "$WSI_DIR" "$THUMBNAIL_DIR" 64 "gauss_otsu" "Background Segmentation"
 
 # Step 2: Run the C tiling program to generate tiles
 echo "Generating tiles..."
-#./tiling_program "$WSI_DIR" "$TILES_DIR"
+./tiling_program "$WSI_DIR" "$TILES_DIR"
 
 # Step 3: Use the generated masks to filter tiles
 echo "Filtering tiles based on background masks..."
-#python tile_filter.py "$TILES_DIR" "$MASK_DIR"
+python tile_filter.py "$TILES_DIR" "$MASK_DIR"
 
 echo "Processing complete!"
 echo "Tissue tiles have been saved to: $TISSUE_TILES_DIR"
