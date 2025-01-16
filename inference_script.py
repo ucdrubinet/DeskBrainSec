@@ -14,8 +14,8 @@ from inference.heatmap import *
 
 PLAQUE_RESULTS_DIR = "plaque"
 TISSUE_RESULTS_DIR = "tissue"
-INFERENCE_NUMPY_DIR = "numpy"
-INFERENCE_IMG_DIR = "images"
+NUMPY_DIR = "numpy"
+IMG_DIR = "images"
 TISSUE_PRESENCE_FILE = "tissue_presence.csv"
 
 def saveBrainSegImage(nums, save_dir) :
@@ -178,31 +178,21 @@ def inference_loop(filenames, model, tiles_dir, output_dir, stride, **kwargs):
                 seg_output[row*heatmap_res:(row+1)*heatmap_res, col*heatmap_res:(col+1)*heatmap_res] = output_class
 
         # Saving Confidence=[0,1] for Plaque Detection
-        if not os.path.exists(os.path.join(output_dir, PLAQUE_RESULTS_DIR, INFERENCE_NUMPY_DIR)):
-            os.makedirs(os.path.join(output_dir, PLAQUE_RESULTS_DIR, INFERENCE_NUMPY_DIR))
-        np.save(os.path.join(output_dir, PLAQUE_RESULTS_DIR, INFERENCE_NUMPY_DIR, slidename), plaque_output)
+        if not os.path.exists(os.path.join(output_dir, PLAQUE_RESULTS_DIR, NUMPY_DIR)):
+            os.makedirs(os.path.join(output_dir, PLAQUE_RESULTS_DIR, NUMPY_DIR))
+        np.save(os.path.join(output_dir, PLAQUE_RESULTS_DIR, NUMPY_DIR, slidename), plaque_output)
         
         # Saving BrainSeg Classification={0,1,2}
-        if not os.path.exists(os.path.join(output_dir, TISSUE_RESULTS_DIR, INFERENCE_NUMPY_DIR)):
-            os.makedirs(os.path.join(output_dir, TISSUE_RESULTS_DIR, INFERENCE_NUMPY_DIR))
-        np.save(os.path.join(output_dir, TISSUE_RESULTS_DIR, INFERENCE_NUMPY_DIR, slidename), seg_output)
-        if not os.path.exists(os.path.join(output_dir, TISSUE_RESULTS_DIR, INFERENCE_IMG_DIR)):
-            os.makedirs(os.path.join(output_dir, TISSUE_RESULTS_DIR, INFERENCE_IMG_DIR))
-        saveBrainSegImage(seg_output, os.path.join(output_dir, TISSUE_RESULTS_DIR, INFERENCE_IMG_DIR, slidename + '.png'))
+        if not os.path.exists(os.path.join(output_dir, TISSUE_RESULTS_DIR, NUMPY_DIR)):
+            os.makedirs(os.path.join(output_dir, TISSUE_RESULTS_DIR, NUMPY_DIR))
+        np.save(os.path.join(output_dir, TISSUE_RESULTS_DIR, NUMPY_DIR, slidename), seg_output)
+        if not os.path.exists(os.path.join(output_dir, TISSUE_RESULTS_DIR, IMG_DIR)):
+            os.makedirs(os.path.join(output_dir, TISSUE_RESULTS_DIR, IMG_DIR))
+        saveBrainSegImage(seg_output, os.path.join(output_dir, TISSUE_RESULTS_DIR, IMG_DIR, slidename + '.png'))
         
         # Time Statistics for Inference
         end_time = time.perf_counter()
         print("Time to process " + slidename + ": ", end_time-start_time, "sec")
-
-# CLI Args
-# SAVE_PLAQ_DIR (for numpy of plaque confidence)
-# SAVE_IMG_DIR (for segmentation pngs)
-# SAVE_NP_DIR (for np version of segmentation)
-# IMG_SIZE (size of each tile image of the WSI) --> rename to TILE_SIZE
-# STRIDE (how many pixels to jump right or down to center each 256 pixel window)
-# Don't set this to more than 128, because then you're not checking some pixels
-# TILE DIR (directory of tile images) --> tile_dir
-# TILE_PRESENCE_FILE (path to csv defining tissue / background mask) --> check for "tissue_presence.csv" in file structure
 
 def main():
     parser = argparse.ArgumentParser()
@@ -210,9 +200,13 @@ def main():
     parser.add_argument("output_dir", help="path to directory to put inference outputs", type=str)
     parser.add_argument("stride", help="number of pixels to jump when doing sliding window inference (int between 0 and 128)", type=int)
     parser.add_argument("model_weights", help="path to model weights .pth file", type=str)
+    parser.add_argument("--debug", "-d", action="store_true", help="Runs inference on a 3 x 3 tile grid in the center of WSI")
 
     args = parser.parse_args()
 
+    if not os.path.exists(args.output_dir):
+        os.makedirs(args.output_dir)
+        
     filenames = os.listdir(args.tiles_dir)
     print(filenames)
     model = PlaqueTissueClassifier().to('cpu')
@@ -223,7 +217,7 @@ def main():
         name = k.replace('module.', '') # remove `module.`
         new_state_dict[name] = v
     model.load_state_dict(new_state_dict)
-    inference_loop(filenames, model, args.tiles_dir, args.output_dir, args.stride)
+    inference_loop(filenames, model, args.tiles_dir, args.output_dir, args.stride, debug=args.debug)
 
 if __name__ == "__main__":
     print("Hi")
