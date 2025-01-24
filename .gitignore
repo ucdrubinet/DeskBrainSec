@@ -9,11 +9,13 @@ entr_fill/
 gauss_otsu/
 tiles/
 wmgm-split/
-checkpoints/
 training_plots/
 tiles2/
 tissue_tiles/
 outputs/
+brainsec_outputs/
+postprocess_output/
+inference_output/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
