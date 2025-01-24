@@ -37,6 +37,7 @@ python bg_seg_script.py "$WSI_DIR" "$THUMBNAIL_DIR" 64 "gauss_otsu" "Background 
 
 # Step 2: Run the C tiling program to generate tiles
 echo "Generating tiles..."
+make tiling
 ./tiling_program "$WSI_DIR" "$TILES_DIR"
 
 # Step 3: Use the generated masks to filter tiles
